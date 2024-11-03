@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ExcelKidsLP</title>
+    <link rel="icon" href="excel.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1c425c;
+            
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgb(0, 0, 0);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .exercise {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .formula-box {
+            background: #e8f4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 60px repeat(4, 1fr);
+            gap: 2px;
+            margin: 15px 0;
+        }
+        .cell {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: center;
+        }
+        .header {
+            background: #e9ecef;
+            font-weight: bold;
+        }
+        .input-cell {
+            width: 90%;
+            padding: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .condition-good {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+        .condition-bad {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+        .condition-neutral {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+        }
+        .tab.active {
+            border-bottom: 3px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .hint {
+            color: #0056b3;
+            cursor: pointer;
+            text-decoration: underline;
+            margin: 10px 0;
+            display: inline-block;
+        }
+        .formula-example {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .formula-parts {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .formula-part {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .condition-example {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #dee2e6;
+        }
+        .greater-than {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .less-than {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .between {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .duplicate {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        /* Estilos para top/bottom */
+        .top-items {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        /* Estilos para barras de datos */
+        .data-bar {
+            background: linear-gradient(90deg, #007bff 70%, transparent 70%);
+        }
+        
+        /* Estilos para escalas de color */
+        .color-scale-low {
+            background-color: #ff9999;
+        }
+        .color-scale-mid {
+            background-color: #ffff99;
+        }
+        .color-scale-high {
+            background-color: #99ff99;
+        }
+        .icon-up::before {
+            content: "↑";
+            color: green;
+        }
+        .icon-down::before {
+            content: "↓";
+            color: red;
+        }
+        
+        /* Estilos para texto */
+        .text-contains {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        /* Estilos para fechas */
+        .date-occurring {
+            background-color: #d6d8db;
+            color: #1b1e21;
+        }
+        
+        .formula-box {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            border-left: 4px solid #007bff;
+        }
+        
+        .tip {
+            font-style: italic;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        /*videos*/
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+        
+        .video-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .video-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+        
+        .video-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .video-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .video-duration {
+            color: #6c757d;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .duration-icon::before {
+            content: "⏱";
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+        
+        .video-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .video-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%; /* Aspecto 16:9 */
+            height: 0;
+            margin-bottom: 10px;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .video-upload-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .video-upload-form input[type="file"] {
+            margin: 10px 0;
+        }
+        
+        .video-upload-form input[type="text"],
+        .video-upload-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .upload-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .upload-btn:hover {
+            background: #45a049;
+        }
+        
+        .video-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .video-tutorial-section {
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Aspecto 16:9 */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .video-list {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .video-thumbnail {
+            cursor: pointer;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        
+        .video-thumbnail:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .video-info {
+            margin-top: 10px;
+        }
+        
+        .video-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .video-topic {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .topic-filter {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .topic-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #000000;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .topic-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="color: whitesmoke;">🎮 ¡Aprende Excel - Operaciones Básicas!</h1>
+        
+        <div class="tabs">
+            <button class="tab" onclick="openTab('grabaciones')">Grabaciones</button>
+            <button class="tab active" onclick="openTab('operaciones')">Operaciones</button>
+            <button class="tab" onclick="openTab('condicional')">Formato Condicional</button>
+            <button class="tab" onclick="openTab('si')">Fórmula SI</button>
+        </div>
+        
+        <div id="grabaciones" class="tab-content">
+            <div class="video-tutorial-section">
+                <h2>📚 Tutoriales de Excel para Niños</h2>
+                
+                <div class="topic-filter">
+                    <button class="topic-btn active" onclick="filterTopic('todos')">Todos</button>
+
+            
+                </div>
+<h2 class="suma">1️⃣SUMA-MULTIPLICACION-DIVISION-RESTA</h2>
+                <div class="video-player">
+                    <div class="video-wrapper">
+                        <video id="mainVideo" controls>
+                            <source src="1.mp4" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <h3 id="currentVideoTitle" class="video-title"></h3>
+                </div>
+                <h2>2️⃣FORMATO CONDICIONAL</h2>
+                <div class="video-player">
+                    <div class="video-wrapper">
+                        <video id="mainVideo" controls>
+                            <source src="" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <h3 id="currentVideoTitle" class="video-title"></h3>
+                </div>
+                <h2>3️⃣FORMULA SI</h2>
+                <div class="video-player">
+                    <div class="video-wrapper">
+                        <video id="mainVideo" controls>
+                            <source src="" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <h3 id="currentVideoTitle" class="video-title"></h3>
+                </div>
+
+                <div class="video-list" id="videoThumbnails">
+                    <!-- Los videos se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+        <div id="operaciones" class="tab-content active">
+            <div class="exercise">
+                <h2>1️⃣ Resta con el signo -</h2>
+                <div class="formula-box">
+                    =B1-C1 resta el valor de C1 del valor de B1
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">D</div>
+                    <div class="cell header">Resultado</div>
+                    
+                    <div class="cell header">1</div>
+                    <div class="cell">10</div>
+                    <div class="cell">4</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=B1-C1" placeholder="=B1-C1"></div>
+                </div>
+                <button onclick="checkAnswers('resta')">Comprobar</button>
+                <div id="feedback-resta" class="feedback"></div>
+            </div>
+
+            <div class="exercise">
+                <h2>2️⃣ Multiplicación con el signo *</h2>
+                <div class="formula-box">
+                    =B2*C2 multiplica el valor de B2 por C2
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">D</div>
+                    <div class="cell header">Resultado</div>
+                    
+                    <div class="cell header">2</div>
+                    <div class="cell">6</div>
+                    <div class="cell">5</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=B2*C2" placeholder="=B2*C2"></div>
+                </div>
+                <button onclick="checkAnswers('multiplicacion')">Comprobar</button>
+                <div id="feedback-multiplicacion" class="feedback"></div>
+            </div>
+
+            <div class="exercise">
+                <h2>3️⃣ División con el signo /</h2>
+                <div class="formula-box">
+                    =B3/C3 divide el valor de B3 entre C3
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">D</div>
+                    <div class="cell header">Resultado</div>
+                    
+                    <div class="cell header">3</div>
+                    <div class="cell">15</div>
+                    <div class="cell">3</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=B3/C3" placeholder="=B3/C3"></div>
+                </div>
+                <button onclick="checkAnswers('division')">Comprobar</button>
+                <div id="feedback-division" class="feedback"></div>
+            </div>
+        </div>
+
+        <div id="condicional" class="tab-content">
+            <div class="exercise">
+                
+                <h2>🎨 Formato Condicional</h2>
+                <p>El formato condicional nos permite cambiar el color de las celdas según su valor:</p>
+                
+                <div class="formula-box">
+                    SI(número > 7) = Verde 🟢<br>
+                    SI(número < 4) = Rojo 🔴<br>
+                    SI(4 ≤ número ≤ 7) = Amarillo 🟡
+                </div>
+
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">Calificación</div>
+                    <div class="cell header">Color</div>
+                    <div class="cell header">Resultado</div>
+                    <div class="cell header">Estado</div>
+                    
+                    <div class="cell header">1</div>
+                    <div class="cell">9</div>
+                    <div class="cell condition-good">Verde</div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="VERDE" placeholder="escribe el color"></div>
+                    <div class="cell">Excelente</div>
+
+                    <div class="cell header">2</div>
+                    <div class="cell">3</div>
+                    <div class="cell condition-bad">Rojo</div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="ROJO" placeholder="escribe el color"></div>
+                    <div class="cell">Necesita mejorar</div>
+
+                    <div class="cell header">3</div>
+                    <div class="cell">6</div>
+                    <div class="cell condition-neutral">Amarillo</div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="AMARILLO" placeholder="escribe el color"></div>
+                    <div class="cell">Regular</div>
+                </div>
+                <button onclick="checkFormatting()">Comprobar Formato</button>
+                <div id="feedback-formato" class="feedback"></div>
+                
+            </div>
+        </div>
+    <div id="si" class="tab-content">
+        <div class="exercise">
+            <h2>🤔 Fórmula SI</h2>
+            <p>La fórmula SI nos ayuda a tomar decisiones en Excel:</p>
+
+            <div class="formula-box">
+                =SI(condición, valor_si_verdadero, valor_si_falso)
+            </div>
+
+            <div class="formula-example">
+                <h3>Ejemplo 1: Calificaciones</h3>
+                <div class="formula-parts">
+                    <span class="formula-part">=SI(B1>=6, "Aprobado", "Reprobado")</span>
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">Resultado</div>
+                    <div class="cell header">✓</div>
+                    
+                    <div class="cell header">1</div>
+                    <div class="cell">8</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=SI(B1>=6,&quot;Aprobado&quot;,&quot;Reprobado&quot;)" placeholder="Escribe la fórmula SI"></div>
+                    <div class="cell">❓</div>
+                </div>
+            </div>
+
+            <div class="formula-example">
+                <h3>Ejemplo 2: Temperatura</h3>
+                <div class="formula-parts">
+                    <span class="formula-part">=SI(B2>25, "calor", "frío")</span>
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">Resultado</div>
+                    <div class="cell header">✓</div>
+                    
+                    <div class="cell header">2</div>
+                    <div class="cell">28</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=SI(B2>25,&quot;calor&quot;,&quot;frío&quot;)" placeholder="Escribe la fórmula SI"></div>
+                    <div class="cell">❓</div>
+                </div>
+            </div>
+
+            <div class="formula-example">
+                <h3>Ejemplo 3: Números Positivos y Negativos</h3>
+                <div class="formula-parts">
+                    <span class="formula-part">=SI(B3>0, "Positivo", "Negativo")</span>
+                </div>
+                <div class="grid">
+                    <div class="cell header"></div>
+                    <div class="cell header">B</div>
+                    <div class="cell header">C</div>
+                    <div class="cell header">Resultado</div>
+                    <div class="cell header">✓</div>
+                    
+                    <div class="cell header">3</div>
+                    <div class="cell">-5</div>
+                    <div class="cell"></div>
+                    <div class="cell"><input type="text" class="input-cell" data-correct="=SI(B3>0,&quot;Positivo&quot;,&quot;Negativo&quot;)" placeholder="Escribe la fórmula SI"></div>
+                    <div class="cell">❓</div>
+                </div>
+            </div>
+        </div>
+
+            <button onclick="checkSI()">Comprobar Fórmulas SI</button>
+            <div id="feedback-si" class="feedback"></div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        function openTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            const tabs = document.getElementsByClassName('tab');
+            
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+                tabs[i].classList.remove('active');
+            }
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function checkAnswers(operation) {
+            const input = document.querySelector(`#feedback-${operation}`).previousElementSibling.previousElementSibling.querySelector('.input-cell');
+            const feedback = document.getElementById(`feedback-${operation}`);
+            
+            const userAnswer = input.value.toLowerCase().replace(/\s/g, '');
+            const correctAnswer = input.dataset.correct.toLowerCase();
+
+            feedback.style.display = 'block';
+            
+            if (userAnswer === correctAnswer) {
+                feedback.className = 'feedback correct';
+                let result;
+                if (operation === 'resta') {
+                    result = 10 - 4;
+                } else if (operation === 'multiplicacion') {
+                    result = 6 * 5;
+                } else if (operation === 'division') {
+                    result = 15 / 3;
+                }
+                feedback.innerHTML = `¡Correcto! 🌟 El resultado es ${result}`;
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '¡Inténtalo de nuevo! 💪 Revisa la fórmula.';
+            }
+        }
+
+        function checkFormatting() {
+            const inputs = document.querySelectorAll('#condicional .input-cell');
+            const feedback = document.getElementById('feedback-formato');
+            let allCorrect = true;
+            
+            inputs.forEach(input => {
+                const userAnswer = input.value.toUpperCase().trim();
+                const correctAnswer = input.dataset.correct;
+                
+                if (userAnswer !== correctAnswer) {
+                    allCorrect = false;
+                }
+            });
+
+            feedback.style.display = 'block';
+            if (allCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '¡Excelente! 🌟 Has identificado correctamente todos los colores según las condiciones.';
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '¡Inténtalo de nuevo! 💪 Revisa las condiciones y los colores correspondientes.';
+            }
+        }
+        function checkSI() {
+            const inputs = document.querySelectorAll('#si .input-cell');
+            const feedback = document.getElementById('feedback-si');
+            let allCorrect = true;
+            let results = [];
+
+            inputs.forEach((input, index) => {
+                const userAnswer = input.value.toLowerCase().replace(/\s/g, '');
+                const correctAnswer = input.dataset.correct.toLowerCase();
+                const resultCell = input.parentElement.nextElementSibling;
+
+                if (userAnswer === correctAnswer) {
+                    resultCell.innerHTML = '✅';
+                    // Calcular el resultado real
+                    if (index === 0) {
+                        results.push('Aprobado (8 >= 6)');
+                    } else if (index === 1) {
+                        results.push('Hace calor (28 > 25)');
+                    } else {
+                        results.push('Negativo (-5 no es > 0)');
+                    }
+                } else {
+                    resultCell.innerHTML = '❌';
+                    allCorrect = false;
+                }
+            });
+
+            feedback.style.display = 'block';
+            if (allCorrect) {
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '¡Excelente! 🌟 Has usado correctamente la fórmula SI.<br>';
+                feedback.innerHTML += 'Resultados:<br>' + results.join('<br>');
+            } else {
+                feedback.className = 'feedback incorrect';
+                feedback.innerHTML = '¡Inténtalo de nuevo! 💪 Recuerda la estructura de la fórmula SI:<br>' +
+                    '=SI(condición, valor_si_verdadero, valor_si_falso)';
+            }
+        }
+        
+        // Almacenamiento local para los videos
+        let videos = JSON.parse(localStorage.getItem('excelVideos')) || [];
+
+        // Función para manejar la subida de videos
+        function handleVideoUpload(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('videoFile');
+            const titleInput = document.getElementById('videoTitle');
+            const descriptionInput = document.getElementById('videoDescription');
+            
+            if (fileInput.files.length === 0) {
+                alert('Por favor selecciona un video');
+                return false;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const video = {
+                    id: Date.now(),
+                    title: titleInput.value,
+                    description: descriptionInput.value,
+                    videoUrl: e.target.result,
+                    duration: '00:00' // Se actualizará cuando el video se cargue
+                };
+                
+                videos.push(video);
+                localStorage.setItem('excelVideos', JSON.stringify(videos));
+                displayVideos();
+                
+                // Limpiar el formulario
+                event.target.reset();
+            };
+            
+            reader.readAsDataURL(file);
+            return false;
+        }
+
+        // Función para mostrar los videos
+        function displayVideos() {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+            
+            videos.forEach(video => {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.innerHTML = `
+                    <div class="video-container">
+                        <video controls>
+                            <source src="${video.videoUrl}" type="video/mp4">
+                            Tu navegador no soporta la reproducción de videos.
+                        </video>
+                    </div>
+                    <h3 class="video-title">${video.title}</h3>
+                    <p class="video-description">${video.description}</p>
+                    <div class="video-controls">
+                        <button onclick="deleteVideo(${video.id})" class="delete-btn">Eliminar</button>
+                    </div>
+                `;
+                grid.appendChild(videoCard);
+            });
+        }
+
+        // Función para eliminar videos
+        function deleteVideo(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este video?')) {
+                videos = videos.filter(video => video.id !== id);
+                localStorage.setItem('excelVideos', JSON.stringify(videos));
+                displayVideos();
+            }
+        }
+
+        // Cargar videos al iniciar
+        window.addEventListener('load', displayVideos);
+    </script>
+</body>
+</html>
